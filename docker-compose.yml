@@ -1,0 +1,132 @@
+version: '3.8'  # Specify a version according to your Docker Compose setup
+
+services:
+  langflow:
+    image: langflowai/langflow-nightly:v1.1.1.dev25
+    container_name: langflow
+    ports:
+      - "7860:7860"
+    environment:
+      - LANGFLOW_AUTO_LOGIN=False
+      - LANGFLOW_SUPERUSER=admin
+      - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
+      - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
+      - LANGFLOW_NEW_USER_IS_ACTIVE=False
+    networks:
+      - web-network
+    restart: always
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt/live/demo.qxli.com/fullchain.pem:/etc/ssl/demo.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/demo.qxli.com/privkey.pem:/etc/ssl/demo.qxli.com/privkey.pem:ro
+      - /etc/letsencrypt/live/agents.qxli.com/fullchain.pem:/etc/ssl/agents.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/agents.qxli.com/privkey.pem:/etc/ssl/agents.qxli.com/privkey.pem:ro
+      - /etc/letsencrypt/live/research.qxli.com/fullchain.pem:/etc/ssl/research.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/research.qxli.com/privkey.pem:/etc/ssl/research.qxli.com/privkey.pem:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - web-network
+    restart: always
+
+  qxli-ui:
+    build:
+      context: ./qxli-ui
+      args:
+        USE_OLLAMA: false
+        USE_CUDA: true
+    image: aryanvermatech/qxli-ui:latest
+    container_name: qxli-ui
+    ports:
+      - "8888:8080"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    devices:
+      - /dev/nvidia0:/dev/nvidia0
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm
+    volumes:
+      - ./qxli-ui/ollama:/root/.ollama
+      - ./qxli-ui/open-webui:/app/backend/data
+    networks:
+      - web-network
+    restart: always
+
+  gpt-researcher:
+    image: gptresearcher/gpt-researcher
+    build: ./gpt-researcher
+    environment:
+      - OPENAI_API_KEY=123
+      - OPENAI_API_BASE=http://ollama:11434/v1
+      - OLLAMA_BASE_URL=http://ollama:11434/
+      - FAST_LLM=ollama:llama3.1:8b
+      - SMART_LLM=ollama:llama3.1:8b
+      - EMBEDDING=ollama:nomic-embed-text
+      - TAVILY_API_KEY=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
+      - DOC_PATH=./my-docs
+    ports:
+      - "8000:8000"
+    networks:
+      - web-network
+    restart: always
+
+  gptr-nextjs:
+    image: gptresearcher/gptr-nextjs
+    build:
+      context: ./gpt-researcher/frontend/nextjs
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./gpt-researcher/frontend/nextjs:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3000:3000"
+    networks:
+      - web-network
+    restart: always
+
+  gpt-researcher-tests:
+    image: gptresearcher/gpt-researcher-tests
+    build: ./gpt-researcher
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+    command: >
+      /bin/sh -c "
+      pip install pytest pytest-asyncio faiss-cpu &&
+      python -m pytest tests/report-types.py &&
+      python -m pytest tests/vector-store.py
+      "
+    networks:
+      - web-network
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    devices:
+      - /dev/nvidia0:/dev/nvidia0
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - web-network
+    restart: always
+
+networks:
+  web-network:
+    external: true
+
+volumes:
+  ollama:
+  open-webui:

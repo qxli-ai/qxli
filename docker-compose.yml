@@ -113,10 +113,13 @@ services:
       - "11434:11434"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-    devices:
-      - /dev/nvidia0:/dev/nvidia0
-      - /dev/nvidiactl:/dev/nvidiactl
-      - /dev/nvidia-uvm:/dev/nvidia-uvm
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
       - ollama:/root/.ollama
     networks:

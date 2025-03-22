@@ -4,11 +4,6 @@ FROM homebrew/brew:latest
 # Set environment variables for non-interactive installs
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies for Homebrew and the basics
-RUN apt-get update && \
-    apt-get install -y build-essential curl file git && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install the software using Homebrew
 RUN brew install i-am-bee/beeai/beeai
 

@@ -12,11 +12,11 @@ RUN brew install i-am-bee/beeai/beeai
 CMD ["beeai", "serve"]
 
 # Set up beeai environment
-RUN beeai env add LLM_MODEL=llama3.1:8b && \
-    beeai env add LLM_API_BASE=http://ollama:11434/v1 && \
-    beeai env add LLM_API_KEY=ollama
+# RUN beeai env add LLM_MODEL=llama3.1:8b && \
+#     beeai env add LLM_API_BASE=http://ollama:11434/v1 && \
+#     beeai env add LLM_API_KEY=ollama
 
-RUN beeai ui
+# RUN beeai ui
 
 # Optionally, expose any required ports
 EXPOSE 8333

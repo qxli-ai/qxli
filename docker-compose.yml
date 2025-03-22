@@ -1,20 +1,6 @@
 version: '3.8'  # Specify a version according to your Docker Compose setup
 
 services:
-  # langflow:
-  #   image: langflowai/langflow-nightly:v1.1.1.dev25
-  #   container_name: langflow
-  #   ports:
-  #     - "7860:7860"
-  #   environment:
-  #     - LANGFLOW_AUTO_LOGIN=False
-  #     - LANGFLOW_SUPERUSER=admin
-  #     - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
-  #     - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
-  #     - LANGFLOW_NEW_USER_IS_ACTIVE=False
-  #   networks:
-  #     - web-network
-  #   restart: always
 
   nginx:
     image: nginx
@@ -55,6 +41,53 @@ services:
     networks:
       - web-network
     restart: always
+  
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - web-network
+    restart: always
+  
+  beeai:
+    build:
+      context: ./beeai
+    container_name: beeai
+    ports:
+      - "8333:8333"
+    volumes:
+      - beeai-data:/data
+    networks:
+      - web-network
+    restart: always
+  
+  # langflow:
+  #   image: langflowai/langflow-nightly:v1.1.1.dev25
+  #   container_name: langflow
+  #   ports:
+  #     - "7860:7860"
+  #   environment:
+  #     - LANGFLOW_AUTO_LOGIN=False
+  #     - LANGFLOW_SUPERUSER=admin
+  #     - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
+  #     - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
+  #     - LANGFLOW_NEW_USER_IS_ACTIVE=False
+  #   networks:
+  #     - web-network
+  #   restart: always
 
   # gpt-researcher:
   #   image: gptresearcher/gpt-researcher
@@ -105,38 +138,6 @@ services:
   #     "
   #   networks:
   #     - web-network
-
-  ollama:
-    image: ollama/ollama
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    volumes:
-      - ollama:/root/.ollama
-    networks:
-      - web-network
-    restart: always
-  
-  # beeai:
-  #   build:
-  #     context: ./beeai  # The directory containing your Dockerfile for beeai
-  #   container_name: beeai
-  #   ports:
-  #     - "8081:8081"  # Adjust ports according to beeai's configuration requirements
-  #   volumes:
-  #     - beeai-data:/data  # Use a volume if beeai requires persistent storage
-  #   networks:
-  #     - web-network
-  #   restart: always
 
 networks:
   web-network:

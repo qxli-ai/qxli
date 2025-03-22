@@ -21,15 +21,14 @@ RUN brew install i-am-bee/beeai/beeai
 RUN brew services start beeai
 
 # Set up beeai environment
-RUN beeai env add LLM_MODEL=llama3.1 && \
+RUN beeai env add LLM_MODEL=llama3.1:8b && \
     beeai env add LLM_API_BASE=http://ollama:11434/v1 && \
     beeai env add LLM_API_KEY=ollama
 
 # Start the service
 # Note: This is better handled in an entrypoint script or command
-CMD ["brew", "services", "start", "beeai"]
+CMD ["beeai", "ui"]
 
 # Optionally, expose any required ports
-EXPOSE 8080
+EXPOSE 8333
 
-# End of Dockerfile

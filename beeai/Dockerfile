@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install the software using Homebrew
 RUN brew install i-am-bee/beeai/beeai
 
-RUN brew services start beeai
+# RUN brew services start beeai
 
 # Set up beeai environment
 RUN beeai env add LLM_MODEL=llama3.1:8b && \

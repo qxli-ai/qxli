@@ -1,5 +1,5 @@
 # Use an official lightweight base image with minimal packages
-FROM ubuntu:latest
+FROM homebrew/brew:latest
 
 # Set environment variables for non-interactive installs
 ENV DEBIAN_FRONTEND=noninteractive
@@ -8,12 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y build-essential curl file git && \
     rm -rf /var/lib/apt/lists/*
-
-# Install Homebrew
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Update path
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 
 # Install the software using Homebrew
 RUN brew install i-am-bee/beeai/beeai

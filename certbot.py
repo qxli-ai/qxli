@@ -1,3 +1,4 @@
+import sys
 import http.server
 import socketserver
 
@@ -5,8 +6,8 @@ PORT = 80
 
 # Update this with your challenge token and expected response.
 # These values are usually provided by Certbot during the challenge setup.
-CHALLENGE_PATH = '/.well-known/acme-challenge/EXIpgpyr1m4k5YxifEmEH0QyQWOuxoCtyoXKm1GN4AM'
-EXPECTED_RESPONSE = 'EXIpgpyr1m4k5YxifEmEH0QyQWOuxoCtyoXKm1GN4AM.VjJLPZuFSmEsUtw8dzozDWxHidUGr75VB5rw3JHh8no'
+CHALLENGE_PATH = sys.argv[1]
+EXPECTED_RESPONSE = sys.argv[2]
 
 class ChallengeHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):

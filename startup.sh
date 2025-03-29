@@ -13,3 +13,4 @@ sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 sudo apt-get install -y docker-compose-plugin
 sudo docker compose up -d
+echo "$NGC_API_KEY" | docker login nvcr.io --username '$oauthtoken' --password-stdin

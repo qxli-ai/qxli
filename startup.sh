@@ -10,6 +10,8 @@ sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install -y nvidia-container-toolkit
 sudo nvidia-ctk runtime configure --runtime=docker
+sudo mkdir -p ~/.cache/nim
+sudo chown -R 777 ~/.cache
 echo "$NGC_API_KEY" | docker login nvcr.io --username '$oauthtoken' --password-stdin
 sudo systemctl restart docker
 sudo apt-get install -y docker-compose-plugin

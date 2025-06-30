@@ -89,6 +89,17 @@ services:
       - web-network
     restart: always
   
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - web-network
+    restart: always
+  
   # nvidia-nim:
   #   image: nvcr.io/nim/meta/llama-3.2-11b-vision-instruct:latest
   #   container_name: llama-3.2-11b-vision-instruct
@@ -170,3 +181,4 @@ volumes:
   ollama:
   open-webui:
   beeai:
+  n8n_data:

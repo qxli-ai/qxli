@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Initialize device type args
 # use build args in the docker build command with --build-arg="BUILDARG=true"
-ARG USE_CUDA=false
+ARG USE_CUDA=true
 ARG USE_OLLAMA=false
 # Tested with cu117 for CUDA 11 and cu121 for CUDA 12 (default)
 ARG USE_CUDA_VER=cu121
@@ -21,17 +21,19 @@ ARG UID=0
 ARG GID=0
 
 ######## WebUI frontend ########
-FROM node:22-alpine3.20 AS build
+FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
 
 WORKDIR /app
+
+# to store git revision in build
+RUN apk add --no-cache git
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
-ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 ######## WebUI backend ########
@@ -133,7 +135,7 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
 # install python dependencies
 COPY --chown=$UID:$GID ./backend/requirements.txt ./requirements.txt
 
-RUN pip3 install uv && \
+RUN pip3 install --no-cache-dir uv && \
     if [ "$USE_CUDA" = "true" ]; then \
     # If you use CUDA the whisper and embedding model will be downloaded on first use
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/$USE_CUDA_DOCKER_VER --no-cache-dir && \

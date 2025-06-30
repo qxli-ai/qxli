@@ -22,7 +22,8 @@
 	import ChevronRight from '../icons/ChevronRight.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
-	import { capitalizeFirstLetter } from '$lib/utils';
+	import { capitalizeFirstLetter, slugify } from '$lib/utils';
+	import XMark from '../icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 	let promptsImportInputElement: HTMLInputElement;
@@ -37,12 +38,21 @@
 	let deletePrompt = null;
 
 	let filteredItems = [];
-	$: filteredItems = prompts.filter((p) => query === '' || p.command.includes(query));
+	$: filteredItems = prompts.filter((p) => {
+		if (query === '') return true;
+		const lowerQuery = query.toLowerCase();
+		return (
+			(p.title || '').toLowerCase().includes(lowerQuery) ||
+			(p.command || '').toLowerCase().includes(lowerQuery) ||
+			(p.user?.name || '').toLowerCase().includes(lowerQuery) ||
+			(p.user?.email || '').toLowerCase().includes(lowerQuery)
+		);
+	});
 
 	const shareHandler = async (prompt) => {
-		toast.success($i18n.t('Redirecting you to OpenWebUI Community'));
+		toast.success($i18n.t('Redirecting you to QXLI Community'));
 
-		const url = 'https://openwebui.com';
+		const url = 'https://demo.qxli.com';
 
 		const tab = await window.open(`${url}/prompts/create`, '_blank');
 		window.addEventListener(
@@ -58,7 +68,15 @@
 	};
 
 	const cloneHandler = async (prompt) => {
-		sessionStorage.prompt = JSON.stringify(prompt);
+		const clonedPrompt = { ...prompt };
+
+		clonedPrompt.title = `${clonedPrompt.title} (Clone)`;
+		const baseCommand = clonedPrompt.command.startsWith('/')
+			? clonedPrompt.command.substring(1)
+			: clonedPrompt.command;
+		clonedPrompt.command = slugify(`${baseCommand} clone`);
+
+		sessionStorage.prompt = JSON.stringify(clonedPrompt);
 		goto('/workspace/prompts/create');
 	};
 
@@ -88,7 +106,7 @@
 
 <svelte:head>
 	<title>
-		{$i18n.t('Prompts')} | {$WEBUI_NAME}
+		{$i18n.t('Prompts')} • {$WEBUI_NAME}
 	</title>
 </svelte:head>
 
@@ -122,10 +140,23 @@
 					<Search className="size-3.5" />
 				</div>
 				<input
-					class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-none bg-transparent"
+					class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Prompts')}
 				/>
+
+				{#if query}
+					<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+						<button
+							class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							on:click={() => {
+								query = '';
+							}}
+						>
+							<XMark className="size-3" strokeWidth="2" />
+						</button>
+					</div>
+				{/if}
 			</div>
 
 			<div>
@@ -239,19 +270,22 @@
 							console.log(savedPrompts);
 
 							for (const prompt of savedPrompts) {
-								await createNewPrompt(
-									localStorage.token,
-									prompt.command.charAt(0) === '/' ? prompt.command.slice(1) : prompt.command,
-									prompt.title,
-									prompt.content
-								).catch((error) => {
-									toast.error(error);
+								await createNewPrompt(localStorage.token, {
+									command:
+										prompt.command.charAt(0) === '/' ? prompt.command.slice(1) : prompt.command,
+									title: prompt.title,
+									content: prompt.content
+								}).catch((error) => {
+									toast.error(`${error}`);
 									return null;
 								});
 							}
 
 							prompts = await getPromptList(localStorage.token);
 							await _prompts.set(await getPrompts(localStorage.token));
+
+							importFiles = [];
+							promptsImportInputElement.value = '';
 						};
 
 						reader.readAsText(importFiles[0]);
@@ -282,33 +316,36 @@
 					</div>
 				</button>
 
-				<button
-					class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
-					on:click={async () => {
-						// promptsImportInputElement.click();
-						let blob = new Blob([JSON.stringify(prompts)], {
-							type: 'application/json'
-						});
-						saveAs(blob, `prompts-export-${Date.now()}.json`);
-					}}
-				>
-					<div class=" self-center mr-2 font-medium line-clamp-1">{$i18n.t('Export Prompts')}</div>
+				{#if prompts.length}
+					<button
+						class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+						on:click={async () => {
+							let blob = new Blob([JSON.stringify(prompts)], {
+								type: 'application/json'
+							});
+							saveAs(blob, `prompts-export-${Date.now()}.json`);
+						}}
+					>
+						<div class=" self-center mr-2 font-medium line-clamp-1">
+							{$i18n.t('Export Prompts')} ({prompts.length})
+						</div>
 
-					<div class=" self-center">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 16 16"
-							fill="currentColor"
-							class="w-4 h-4"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-					</div>
-				</button>
+						<div class=" self-center">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="currentColor"
+								class="w-4 h-4"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</div>
+					</button>
+				{/if}
 			</div>
 		</div>
 	{/if}
@@ -316,12 +353,12 @@
 	{#if $config?.features.enable_community_sharing}
 		<div class=" my-16">
 			<div class=" text-xl font-medium mb-1 line-clamp-1">
-				{$i18n.t('Made by OpenWebUI Community')}
+				{$i18n.t('Made by QXLI Community')}
 			</div>
 
 			<a
 				class=" flex cursor-pointer items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-850 w-full mb-2 px-3.5 py-1.5 rounded-xl transition"
-				href="https://openwebui.com/#open-webui-community"
+				href="https://demo.qxli.com/#open-webui-community"
 				target="_blank"
 			>
 				<div class=" self-center">

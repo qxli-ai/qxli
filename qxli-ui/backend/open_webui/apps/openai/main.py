@@ -148,13 +148,13 @@ async def speech(request: Request, user=Depends(get_verified_user)):
         headers["Authorization"] = f"Bearer {app.state.config.OPENAI_API_KEYS[idx]}"
         headers["Content-Type"] = "application/json"
         if "openrouter.ai" in app.state.config.OPENAI_API_BASE_URLS[idx]:
-            headers["HTTP-Referer"] = "https://openwebui.com/"
+            headers["HTTP-Referer"] = "https://demo.qxli.com/"
             headers["X-Title"] = "QXLI"
         if ENABLE_FORWARD_USER_INFO_HEADERS:
-            headers["X-OpenWebUI-User-Name"] = user.name
-            headers["X-OpenWebUI-User-Id"] = user.id
-            headers["X-OpenWebUI-User-Email"] = user.email
-            headers["X-OpenWebUI-User-Role"] = user.role
+            headers["X-QXLI-User-Name"] = user.name
+            headers["X-QXLI-User-Id"] = user.id
+            headers["X-QXLI-User-Email"] = user.email
+            headers["X-QXLI-User-Role"] = user.role
         r = None
         try:
             r = requests.post(
@@ -369,10 +369,10 @@ async def get_models(url_idx: Optional[int] = None, user=Depends(get_verified_us
         headers["Content-Type"] = "application/json"
 
         if ENABLE_FORWARD_USER_INFO_HEADERS:
-            headers["X-OpenWebUI-User-Name"] = user.name
-            headers["X-OpenWebUI-User-Id"] = user.id
-            headers["X-OpenWebUI-User-Email"] = user.email
-            headers["X-OpenWebUI-User-Role"] = user.role
+            headers["X-QXLI-User-Name"] = user.name
+            headers["X-QXLI-User-Id"] = user.id
+            headers["X-QXLI-User-Email"] = user.email
+            headers["X-QXLI-User-Role"] = user.role
 
         r = None
 
@@ -590,13 +590,13 @@ async def generate_chat_completion(
     headers["Authorization"] = f"Bearer {key}"
     headers["Content-Type"] = "application/json"
     if "openrouter.ai" in app.state.config.OPENAI_API_BASE_URLS[idx]:
-        headers["HTTP-Referer"] = "https://openwebui.com/"
+        headers["HTTP-Referer"] = "https://demo.qxli.com/"
         headers["X-Title"] = "QXLI"
     if ENABLE_FORWARD_USER_INFO_HEADERS:
-        headers["X-OpenWebUI-User-Name"] = user.name
-        headers["X-OpenWebUI-User-Id"] = user.id
-        headers["X-OpenWebUI-User-Email"] = user.email
-        headers["X-OpenWebUI-User-Role"] = user.role
+        headers["X-QXLI-User-Name"] = user.name
+        headers["X-QXLI-User-Id"] = user.id
+        headers["X-QXLI-User-Email"] = user.email
+        headers["X-QXLI-User-Role"] = user.role
 
     r = None
     session = None
@@ -666,10 +666,10 @@ async def proxy(path: str, request: Request, user=Depends(get_verified_user)):
     headers["Authorization"] = f"Bearer {key}"
     headers["Content-Type"] = "application/json"
     if ENABLE_FORWARD_USER_INFO_HEADERS:
-        headers["X-OpenWebUI-User-Name"] = user.name
-        headers["X-OpenWebUI-User-Id"] = user.id
-        headers["X-OpenWebUI-User-Email"] = user.email
-        headers["X-OpenWebUI-User-Role"] = user.role
+        headers["X-QXLI-User-Name"] = user.name
+        headers["X-QXLI-User-Id"] = user.id
+        headers["X-QXLI-User-Email"] = user.email
+        headers["X-QXLI-User-Role"] = user.role
 
     r = None
     session = None

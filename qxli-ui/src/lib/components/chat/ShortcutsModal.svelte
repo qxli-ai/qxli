@@ -2,6 +2,7 @@
 	import { getContext } from 'svelte';
 	import Modal from '../common/Modal.svelte';
 
+	import Tooltip from '../common/Tooltip.svelte';
 	const i18n = getContext('i18n');
 
 	export let show = false;
@@ -38,19 +39,19 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								O
 							</div>
@@ -62,13 +63,33 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Esc
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full flex justify-between items-center">
+						<div class=" text-sm">
+							<Tooltip
+								content={$i18n.t(
+									'Only active when the chat input is in focus and an LLM is generating a response.'
+								)}
+							>
+								{$i18n.t('Stop Generating')}<span class="text-xs"> *</span>
+							</Tooltip>
+						</div>
+
+						<div class="flex space-x-1 text-xs">
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Esc
 							</div>
@@ -80,19 +101,19 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								;
 							</div>
@@ -104,21 +125,53 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								C
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full flex justify-between items-center">
+						<div class=" text-sm">
+							<Tooltip
+								content={$i18n.t(
+									'Only active when "Paste Large Text as File" setting is toggled on.'
+								)}
+							>
+								{$i18n.t('Prevent file creation')}<span class="text-s"> *</span>
+							</Tooltip>
+						</div>
+
+						<div class="flex space-x-1 text-xs">
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Ctrl/⌘
+							</div>
+
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Shift
+							</div>
+
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								V
 							</div>
 						</div>
 					</div>
@@ -126,16 +179,57 @@
 
 				<div class="flex flex-col space-y-3 w-full self-start">
 					<div class="w-full flex justify-between items-center">
-						<div class=" text-sm">{$i18n.t('Toggle settings')}</div>
+						<div class=" text-sm">{$i18n.t('Generate prompt pair')}</div>
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Ctrl/⌘
+							</div>
+
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Shift
+							</div>
+
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Enter
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full flex justify-between items-center">
+						<div class=" text-sm">{$i18n.t('Toggle search')}</div>
+
+						<div class="flex space-x-1 text-xs">
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								K
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full flex justify-between items-center">
+						<div class=" text-sm">{$i18n.t('Toggle settings')}</div>
+
+						<div class="flex space-x-1 text-xs">
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								Ctrl/⌘
+							</div>
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								.
 							</div>
@@ -147,19 +241,19 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								S
 							</div>
@@ -171,18 +265,18 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Shift
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								⌫/Delete
 							</div>
@@ -194,13 +288,13 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								Ctrl/⌘
 							</div>
 
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								/
 							</div>
@@ -210,6 +304,11 @@
 			</div>
 		</div>
 
+		<div class="px-5 pb-4 text-xs text-gray-500 dark:text-gray-400">
+			{$i18n.t(
+				'Shortcuts with an asterisk (*) are situational and only active under specific conditions.'
+			)}
+		</div>
 		<div class=" flex justify-between dark:text-gray-300 px-5">
 			<div class=" text-lg font-medium self-center">{$i18n.t('Input commands')}</div>
 		</div>
@@ -219,12 +318,12 @@
 				<div class="flex flex-col space-y-3 w-full self-start">
 					<div class="w-full flex justify-between items-center">
 						<div class=" text-sm">
-							{$i18n.t('Attach file')}
+							{$i18n.t('Attach file from knowledge')}
 						</div>
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								#
 							</div>
@@ -238,7 +337,7 @@
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								/
 							</div>
@@ -247,14 +346,28 @@
 
 					<div class="w-full flex justify-between items-center">
 						<div class=" text-sm">
-							{$i18n.t('Select model')}
+							{$i18n.t('Talk to model')}
 						</div>
 
 						<div class="flex space-x-1 text-xs">
 							<div
-								class=" h-fit py-1 px-2 flex items-center justify-center rounded border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
 							>
 								@
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full flex justify-between items-center">
+						<div class=" text-sm">
+							{$i18n.t('Accept autocomplete generation / Jump to prompt variable')}
+						</div>
+
+						<div class="flex space-x-1 text-xs">
+							<div
+								class=" h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+							>
+								TAB
 							</div>
 						</div>
 					</div>

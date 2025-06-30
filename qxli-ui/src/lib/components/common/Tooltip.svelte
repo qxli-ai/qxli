@@ -2,16 +2,15 @@
 	import DOMPurify from 'dompurify';
 
 	import { onDestroy } from 'svelte';
-	import { marked } from 'marked';
 
 	import tippy from 'tippy.js';
-	import { roundArrow } from 'tippy.js';
 
 	export let placement = 'top';
 	export let content = `I'm a tooltip!`;
 	export let touch = true;
 	export let className = 'flex';
 	export let theme = '';
+	export let offset = [0, 4];
 	export let allowHTML = true;
 	export let tippyOptions = {};
 
@@ -29,7 +28,7 @@
 				touch: touch,
 				...(theme !== '' ? { theme } : { theme: 'dark' }),
 				arrow: false,
-				offset: [0, 4],
+				offset: offset,
 				...tippyOptions
 			});
 		}
@@ -46,6 +45,6 @@
 	});
 </script>
 
-<div bind:this={tooltipElement} aria-label={DOMPurify.sanitize(content)} class={className}>
+<div bind:this={tooltipElement} class={className}>
 	<slot />
 </div>

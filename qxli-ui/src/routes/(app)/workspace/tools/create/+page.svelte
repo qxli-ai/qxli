@@ -39,7 +39,7 @@
 			content: data.content,
 			access_control: data.access_control
 		}).catch((error) => {
-			toast.error(error);
+			toast.error(`${error}`);
 			return null;
 		});
 
@@ -54,7 +54,7 @@
 	onMount(() => {
 		window.addEventListener('message', async (event) => {
 			if (
-				!['https://openwebui.com', 'https://www.openwebui.com', 'http://localhost:9999'].includes(
+				!['https://demo.qxli.com', 'https://www.qxli.com', 'http://localhost:9999'].includes(
 					event.origin
 				)
 			)
@@ -89,8 +89,8 @@
 			content={tool?.content ?? ''}
 			access_control={null}
 			{clone}
-			on:save={(e) => {
-				saveHandler(e.detail);
+			onSave={(value) => {
+				saveHandler(value);
 			}}
 		/>
 	{/key}

@@ -1,13 +1,20 @@
 import { APP_NAME } from '$lib/constants';
 import { type Writable, writable } from 'svelte/store';
-import type { GlobalModelConfig, ModelConfig } from '$lib/apis';
+import type { ModelConfig } from '$lib/apis';
 import type { Banner } from '$lib/types';
 import type { Socket } from 'socket.io-client';
+
+import emojiShortCodes from '$lib/emoji-shortcodes.json';
 
 // Backend
 export const WEBUI_NAME = writable(APP_NAME);
 export const config: Writable<Config | undefined> = writable(undefined);
 export const user: Writable<SessionUser | undefined> = writable(undefined);
+
+// Electron App
+export const isApp = writable(false);
+export const appInfo = writable(null);
+export const appData = writable(null);
 
 // Frontend
 export const MODEL_DOWNLOAD_POOL = writable({});
@@ -15,15 +22,32 @@ export const MODEL_DOWNLOAD_POOL = writable({});
 export const mobile = writable(false);
 
 export const socket: Writable<null | Socket> = writable(null);
-export const activeUserCount: Writable<null | number> = writable(null);
+export const activeUserIds: Writable<null | string[]> = writable(null);
 export const USAGE_POOL: Writable<null | string[]> = writable(null);
 
 export const theme = writable('system');
 
+export const shortCodesToEmojis = writable(
+	Object.entries(emojiShortCodes).reduce((acc, [key, value]) => {
+		if (typeof value === 'string') {
+			acc[value] = key;
+		} else {
+			for (const v of value) {
+				acc[v] = key;
+			}
+		}
+
+		return acc;
+	}, {})
+);
+
+export const TTSWorker = writable(null);
+
 export const chatId = writable('');
 export const chatTitle = writable('');
 
-export const chats = writable([]);
+export const channels = writable([]);
+export const chats = writable(null);
 export const pinnedChats = writable([]);
 export const tags = writable([]);
 
@@ -34,11 +58,14 @@ export const knowledge: Writable<null | Document[]> = writable(null);
 export const tools = writable(null);
 export const functions = writable(null);
 
+export const toolServers = writable([]);
+
 export const banners: Writable<Banner[]> = writable([]);
 
 export const settings: Writable<Settings> = writable({});
 
 export const showSidebar = writable(false);
+export const showSearch = writable(false);
 export const showSettings = writable(false);
 export const showArchivedChats = writable(false);
 export const showChangelog = writable(false);
@@ -48,9 +75,14 @@ export const showOverview = writable(false);
 export const showArtifacts = writable(false);
 export const showCallOverlay = writable(false);
 
+export const artifactCode = writable(null);
+
 export const temporaryChatEnabled = writable(false);
 export const scrollPaginationEnabled = writable(false);
 export const currentChatPage = writable(1);
+
+export const isLastActiveTab = writable(true);
+export const playingNotificationSound = writable(false);
 
 export type Model = OpenAIModel | OllamaModel;
 
@@ -110,13 +142,13 @@ type Settings = {
 	audio?: AudioSettings;
 	showUsername?: boolean;
 	notificationEnabled?: boolean;
+	highContrastMode?: boolean;
 	title?: TitleSettings;
 	splitLargeDeltas?: boolean;
-	chatDirection: 'LTR' | 'RTL';
+	chatDirection: 'LTR' | 'RTL' | 'auto';
+	ctrlEnterToSend?: boolean;
 
 	system?: string;
-	requestFormat?: string;
-	keepAlive?: string;
 	seed?: number;
 	temperature?: string;
 	repeat_penalty?: string;
@@ -176,15 +208,23 @@ type Config = {
 		enable_signup: boolean;
 		enable_login_form: boolean;
 		enable_web_search?: boolean;
+		enable_google_drive_integration: boolean;
+		enable_onedrive_integration: boolean;
 		enable_image_generation: boolean;
 		enable_admin_export: boolean;
 		enable_admin_chat_access: boolean;
 		enable_community_sharing: boolean;
+		enable_autocomplete_generation: boolean;
+		enable_direct_connections: boolean;
 	};
 	oauth: {
 		providers: {
 			[key: string]: string;
 		};
+	};
+	ui?: {
+		pending_user_overlay_title?: string;
+		pending_user_overlay_description?: string;
 	};
 };
 

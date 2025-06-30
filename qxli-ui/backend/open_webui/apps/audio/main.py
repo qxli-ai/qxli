@@ -281,10 +281,10 @@ async def speech(request: Request, user=Depends(get_verified_user)):
         headers["Content-Type"] = "application/json"
 
         if ENABLE_FORWARD_USER_INFO_HEADERS:
-            headers["X-OpenWebUI-User-Name"] = user.name
-            headers["X-OpenWebUI-User-Id"] = user.id
-            headers["X-OpenWebUI-User-Email"] = user.email
-            headers["X-OpenWebUI-User-Role"] = user.role
+            headers["X-QXLI-User-Name"] = user.name
+            headers["X-QXLI-User-Id"] = user.id
+            headers["X-QXLI-User-Email"] = user.email
+            headers["X-QXLI-User-Role"] = user.role
 
         try:
             body = body.decode("utf-8")

@@ -67,27 +67,31 @@
 			</div>
 		</Collapsible>
 
-		<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
+			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
 
-		<Collapsible title={$i18n.t('System Prompt')} open={true} buttonClassName="w-full">
-			<div class="" slot="content">
-				<textarea
-					bind:value={params.system}
-					class="w-full text-xs py-1.5 bg-transparent outline-none resize-none"
-					rows="4"
-					placeholder={$i18n.t('Enter system prompt')}
-				/>
-			</div>
-		</Collapsible>
-
-		<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
-
-		<Collapsible title={$i18n.t('Advanced Params')} open={true} buttonClassName="w-full">
-			<div class="text-sm mt-1.5" slot="content">
-				<div>
-					<AdvancedParams admin={$user?.role === 'admin'} bind:params />
+			<Collapsible title={$i18n.t('System Prompt')} open={true} buttonClassName="w-full">
+				<div class="" slot="content">
+					<textarea
+						bind:value={params.system}
+						class="w-full text-xs py-1.5 bg-transparent outline-hidden resize-none"
+						rows="4"
+						placeholder={$i18n.t('Enter system prompt')}
+					/>
 				</div>
-			</div>
-		</Collapsible>
+			</Collapsible>
+		{/if}
+
+		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
+			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+
+			<Collapsible title={$i18n.t('Advanced Params')} open={true} buttonClassName="w-full">
+				<div class="text-sm mt-1.5" slot="content">
+					<div>
+						<AdvancedParams admin={$user?.role === 'admin'} custom={true} bind:params />
+					</div>
+				</div>
+			</Collapsible>
+		{/if}
 	</div>
 </div>

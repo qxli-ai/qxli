@@ -20,6 +20,7 @@
 
 	export let user;
 
+	export let gotoMessage;
 	export let showPreviousMessage;
 	export let showNextMessage;
 	export let updateChat;
@@ -35,6 +36,7 @@
 	export let continueResponse;
 	export let mergeResponses;
 
+	export let addMessages;
 	export let triggerScroll;
 	export let readOnly = false;
 </script>
@@ -56,6 +58,7 @@
 					: (Object.values(history.messages)
 							.filter((message) => message.parentId === null)
 							.map((message) => message.id) ?? [])}
+				{gotoMessage}
 				{showPreviousMessage}
 				{showNextMessage}
 				{editMessage}
@@ -69,6 +72,7 @@
 				{messageId}
 				isLastMessage={messageId === history.currentId}
 				siblings={history.messages[history.messages[messageId].parentId]?.childrenIds ?? []}
+				{gotoMessage}
 				{showPreviousMessage}
 				{showNextMessage}
 				{updateChat}
@@ -77,8 +81,10 @@
 				{rateMessage}
 				{actionMessage}
 				{submitMessage}
+				{deleteMessage}
 				{continueResponse}
 				{regenerateResponse}
+				{addMessages}
 				{readOnly}
 			/>
 		{:else}
@@ -93,10 +99,12 @@
 				{rateMessage}
 				{actionMessage}
 				{submitMessage}
+				{deleteMessage}
 				{continueResponse}
 				{regenerateResponse}
 				{mergeResponses}
 				{triggerScroll}
+				{addMessages}
 				{readOnly}
 			/>
 		{/if}

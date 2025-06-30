@@ -8,19 +8,51 @@
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import UserCircleSolid from '$lib/components/icons/UserCircleSolid.svelte';
 	import XMark from '$lib/components/icons/XMark.svelte';
+	import Badge from '$lib/components/common/Badge.svelte';
 
 	export let onChange: Function = () => {};
 
-	export let accessControl = null;
+	export let accessRoles = ['read'];
+	export let accessControl = {};
+
+	export let allowPublic = true;
 
 	let selectedGroupId = '';
 	let groups = [];
+
+	$: if (!allowPublic && accessControl === null) {
+		accessControl = {
+			read: {
+				group_ids: [],
+				user_ids: []
+			},
+			write: {
+				group_ids: [],
+				user_ids: []
+			}
+		};
+		onChange(accessControl);
+	}
 
 	onMount(async () => {
 		groups = await getGroups(localStorage.token);
 
 		if (accessControl === null) {
-			accessControl = null;
+			if (allowPublic) {
+				accessControl = null;
+			} else {
+				accessControl = {
+					read: {
+						group_ids: [],
+						user_ids: []
+					},
+					write: {
+						group_ids: [],
+						user_ids: []
+					}
+				};
+				onChange(accessControl);
+			}
 		} else {
 			accessControl = {
 				read: {
@@ -36,6 +68,18 @@
 	});
 
 	$: onChange(accessControl);
+
+	$: if (selectedGroupId) {
+		onSelectGroup();
+	}
+
+	const onSelectGroup = () => {
+		if (selectedGroupId !== '') {
+			accessControl.read.group_ids = [...accessControl.read.group_ids, selectedGroupId];
+
+			selectedGroupId = '';
+		}
+	};
 </script>
 
 <div class=" rounded-lg flex flex-col gap-2">
@@ -82,7 +126,7 @@
 			<div>
 				<select
 					id="models"
-					class="outline-none bg-transparent text-sm font-medium rounded-lg block w-fit pr-10 max-w-full placeholder-gray-400"
+					class="outline-hidden bg-transparent text-sm font-medium rounded-lg block w-fit pr-10 max-w-full placeholder-gray-400"
 					value={accessControl !== null ? 'private' : 'public'}
 					on:change={(e) => {
 						if (e.target.value === 'public') {
@@ -90,14 +134,21 @@
 						} else {
 							accessControl = {
 								read: {
-									group_ids: []
+									group_ids: [],
+									user_ids: []
+								},
+								write: {
+									group_ids: [],
+									user_ids: []
 								}
 							};
 						}
 					}}
 				>
-					<option class=" text-gray-700" value="private" selected>Private</option>
-					<option class=" text-gray-700" value="public" selected>Public</option>
+					<option class=" text-gray-700" value="private" selected>{$i18n.t('Private')}</option>
+					{#if allowPublic}
+						<option class=" text-gray-700" value="public" selected>{$i18n.t('Public')}</option>
+					{/if}
 				</select>
 
 				<div class=" text-xs text-gray-400 font-medium">
@@ -110,7 +161,6 @@
 			</div>
 		</div>
 	</div>
-
 	{#if accessControl !== null}
 		{@const accessGroups = groups.filter((group) =>
 			accessControl.read.group_ids.includes(group.id)
@@ -123,7 +173,42 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col gap-2">
+				<div class="mb-1">
+					<div class="flex w-full">
+						<div class="flex flex-1 items-center">
+							<div class="w-full px-0.5">
+								<select
+									class="outline-hidden bg-transparent text-sm rounded-lg block w-full pr-10 max-w-full
+									{selectedGroupId ? '' : 'text-gray-500'}
+									dark:placeholder-gray-500"
+									bind:value={selectedGroupId}
+								>
+									<option class=" text-gray-700" value="" disabled selected
+										>{$i18n.t('Select a group')}</option
+									>
+									{#each groups.filter((group) => !accessControl.read.group_ids.includes(group.id)) as group}
+										<option class=" text-gray-700" value={group.id}>{group.name}</option>
+									{/each}
+								</select>
+							</div>
+							<!-- <div>
+								<Tooltip content={$i18n.t('Add Group')}>
+									<button
+										class=" p-1 rounded-xl bg-transparent dark:hover:bg-white/5 hover:bg-black/5 transition font-medium text-sm flex items-center space-x-1"
+										type="button"
+										on:click={() => {}}
+									>
+										<Plus className="size-3.5" />
+									</button>
+								</Tooltip>
+							</div> -->
+						</div>
+					</div>
+				</div>
+
+				<hr class=" border-gray-100 dark:border-gray-700/10 mt-1.5 mb-2.5 w-full" />
+
+				<div class="flex flex-col gap-2 mb-1 px-0.5">
 					{#if accessGroups.length > 0}
 						{#each accessGroups as group}
 							<div class="flex items-center gap-3 justify-between text-xs w-full transition">
@@ -137,7 +222,32 @@
 									</div>
 								</div>
 
-								<div class="w-full flex justify-end">
+								<div class="w-full flex justify-end items-center gap-0.5">
+									<button
+										class=""
+										type="button"
+										on:click={() => {
+											if (accessRoles.includes('write')) {
+												if (accessControl.write.group_ids.includes(group.id)) {
+													accessControl.write.group_ids = accessControl.write.group_ids.filter(
+														(group_id) => group_id !== group.id
+													);
+												} else {
+													accessControl.write.group_ids = [
+														...accessControl.write.group_ids,
+														group.id
+													];
+												}
+											}
+										}}
+									>
+										{#if accessControl.write.group_ids.includes(group.id)}
+											<Badge type={'success'} content={$i18n.t('Write')} />
+										{:else}
+											<Badge type={'info'} content={$i18n.t('Read')} />
+										{/if}
+									</button>
+
 									<button
 										class=" rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
 										type="button"
@@ -159,48 +269,6 @@
 							</div>
 						</div>
 					{/if}
-				</div>
-			</div>
-
-			<hr class=" my-2 border-black/5 dark:border-white/5" />
-
-			<div class="mb-1">
-				<div class="flex w-full">
-					<div class="flex flex-1 items-center">
-						<div class="w-full">
-							<select
-								class="outline-none bg-transparent text-sm font-medium rounded-lg block w-full pr-10 max-w-full dark:placeholder-gray-700"
-								bind:value={selectedGroupId}
-							>
-								<option class=" text-gray-700" value="" disabled selected
-									>{$i18n.t('Select a group')}</option
-								>
-								{#each groups.filter((group) => !accessControl.read.group_ids.includes(group.id)) as group}
-									<option class=" text-gray-700" value={group.id}>{group.name}</option>
-								{/each}
-							</select>
-						</div>
-						<div>
-							<Tooltip content={$i18n.t('Add Group')}>
-								<button
-									class=" p-1 rounded-xl bg-transparent dark:hover:bg-white/5 hover:bg-black/5 transition font-medium text-sm flex items-center space-x-1"
-									type="button"
-									on:click={() => {
-										if (selectedGroupId !== '') {
-											accessControl.read.group_ids = [
-												...accessControl.read.group_ids,
-												selectedGroupId
-											];
-
-											selectedGroupId = '';
-										}
-									}}
-								>
-									<Plus className="size-3.5" />
-								</button>
-							</Tooltip>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>

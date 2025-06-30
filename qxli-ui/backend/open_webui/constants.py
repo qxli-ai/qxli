@@ -31,6 +31,7 @@ class ERROR_MESSAGES(str, Enum):
     USERNAME_TAKEN = (
         "Uh-oh! This username is already registered. Please choose another username."
     )
+    PASSWORD_TOO_LONG = "Uh-oh! The password you entered is too long. Please make sure your password is less than 72 bytes long."
     COMMAND_TAKEN = "Uh-oh! This command is already registered. Please choose another command string."
     FILE_EXISTS = "Uh-oh! This file is already registered. Please choose another file."
 
@@ -57,7 +58,7 @@ class ERROR_MESSAGES(str, Enum):
     )
 
     FILE_NOT_SENT = "FILE_NOT_SENT"
-    FILE_NOT_SUPPORTED = "Oops! It seems like the file format you're trying to upload is not supported. Please upload a file with a supported format (e.g., JPG, PNG, PDF, TXT) and try again."
+    FILE_NOT_SUPPORTED = "Oops! It seems like the file format you're trying to upload is not supported. Please upload a file with a supported format and try again."
 
     NOT_FOUND = "We could not find what you're looking for :/"
     USER_NOT_FOUND = "We could not find what you're looking for :/"
@@ -110,9 +111,11 @@ class TASKS(str, Enum):
 
     DEFAULT = lambda task="": f"{task if task else 'generation'}"
     TITLE_GENERATION = "title_generation"
+    FOLLOW_UP_GENERATION = "follow_up_generation"
     TAGS_GENERATION = "tags_generation"
     EMOJI_GENERATION = "emoji_generation"
     QUERY_GENERATION = "query_generation"
+    IMAGE_PROMPT_GENERATION = "image_prompt_generation"
     AUTOCOMPLETE_GENERATION = "autocomplete_generation"
     FUNCTION_CALLING = "function_calling"
     MOA_RESPONSE_GENERATION = "moa_response_generation"

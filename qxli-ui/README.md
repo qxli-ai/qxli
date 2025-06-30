@@ -7,13 +7,19 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/open-webui/open-webui)
 ![GitHub top language](https://img.shields.io/github/languages/top/open-webui/open-webui)
 ![GitHub last commit](https://img.shields.io/github/last-commit/open-webui/open-webui?color=red)
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Follama-webui%2Follama-wbui&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
 [![Discord](https://img.shields.io/badge/Discord-Open_WebUI-blue?logo=discord&logoColor=white)](https://discord.gg/5rJgQTnV4s)
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/tjbck)
 
-QXLI is an [extensible](https://github.com/open-webui/pipelines), feature-rich, and user-friendly self-hosted WebUI designed to operate entirely offline. It supports various LLM runners, including Ollama and OpenAI-compatible APIs. For more information, be sure to check out our [QXLI Documentation](https://docs.openwebui.com/).
+**QXLI is an [extensible](https://demo.qxli.com/features/plugin/), feature-rich, and user-friendly self-hosted AI platform designed to operate entirely offline.** It supports various LLM runners like **Ollama** and **OpenAI-compatible APIs**, with **built-in inference engine** for RAG, making it a **powerful AI deployment solution**.
 
 ![QXLI Demo](./demo.gif)
+
+> [!TIP]  
+> **Looking for an [Enterprise Plan](https://demo.qxli.com/enterprise)?** – **[Speak with Our Sales Team Today!](mailto:sales@qxli.com)**
+>
+> Get **enhanced capabilities**, including **custom theming and branding**, **Service Level Agreement (SLA) support**, **Long-Term Support (LTS) versions**, and **more!**
+
+For more information, be sure to check out our [QXLI Documentation](https://demo.qxli.com/).
 
 ## Key Features of QXLI ⭐
 
@@ -31,7 +37,7 @@ QXLI is an [extensible](https://github.com/open-webui/pipelines), feature-rich, 
 
 - 🎤📹 **Hands-Free Voice/Video Call**: Experience seamless communication with integrated hands-free voice and video call features, allowing for a more dynamic and interactive chat environment.
 
-- 🛠️ **Model Builder**: Easily create Ollama models via the Web UI. Create and add custom characters/agents, customize chat elements, and import models effortlessly through [QXLI Community](https://openwebui.com/) integration.
+- 🛠️ **Model Builder**: Easily create Ollama models via the Web UI. Create and add custom characters/agents, customize chat elements, and import models effortlessly through [QXLI Community](https://demo.qxli.com/) integration.
 
 - 🐍 **Native Python Function Calling Tool**: Enhance your LLMs with built-in code editor support in the tools workspace. Bring Your Own Function (BYOF) by simply adding your pure Python functions, enabling seamless integration with LLMs.
 
@@ -53,11 +59,48 @@ QXLI is an [extensible](https://github.com/open-webui/pipelines), feature-rich, 
 
 - 🌟 **Continuous Updates**: We are committed to improving QXLI with regular updates, fixes, and new features.
 
-Want to learn more about QXLI's features? Check out our [QXLI documentation](https://docs.openwebui.com/features) for a comprehensive overview!
+Want to learn more about QXLI's features? Check out our [QXLI documentation](https://demo.qxli.com/features) for a comprehensive overview!
 
-## 🔗 Also Check Out QXLI Community!
+## Sponsors 🙌
 
-Don't forget to explore our sibling project, [QXLI Community](https://openwebui.com/), where you can discover, download, and explore customized Modelfiles. QXLI Community offers a wide range of exciting possibilities for enhancing your chat interactions with QXLI! 🚀
+#### Emerald
+
+<table>
+  <tr>
+    <td>
+      <a href="https://n8n.io/" target="_blank">
+        <img src="https://demo.qxli.com/sponsors/logos/n8n.png" alt="n8n" style="width: 8rem; height: 8rem; border-radius: .75rem;" />
+      </a>
+    </td>
+    <td>
+      <a href="https://n8n.io/">n8n</a> • Does your interface have a backend yet?<br>Try <a href="https://n8n.io/">n8n</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="https://warp.dev/open-webui" target="_blank">
+        <img src="https://demo.qxli.com/sponsors/logos/warp.png" alt="Warp" style="width: 8rem; height: 8rem; border-radius: .75rem;" />
+      </a>
+    </td>
+    <td>
+      <a href="https://warp.dev/open-webui">Warp</a> • The intelligent terminal for developers
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="https://tailscale.com/blog/self-host-a-local-ai-stack/?utm_source=QXLI&utm_medium=paid-ad-placement&utm_campaign=QXLI-Docs" target="_blank">
+        <img src="https://demo.qxli.com/sponsors/logos/tailscale.png" alt="Tailscale" style="width: 8rem; height: 8rem; border-radius: .75rem;" />
+      </a>
+    </td>
+    <td>
+      <a href="https://tailscale.com/blog/self-host-a-local-ai-stack/?utm_source=QXLI&utm_medium=paid-ad-placement&utm_campaign=QXLI-Docs">Tailscale</a> • Connect self-hosted AI to any device with Tailscale
+    </td>
+  </tr>
+</table>
+
+---
+
+We are incredibly grateful for the generous support of our sponsors. Their contributions help us to maintain and improve our project, ensuring we can continue to deliver quality work to our community. Thank you!
 
 ## How to Install 🚀
 
@@ -84,7 +127,7 @@ This will start the QXLI server, which you can access at [http://localhost:8080]
 ### Quick Start with Docker 🐳
 
 > [!NOTE]  
-> Please note that for certain Docker environments, additional configurations might be needed. If you encounter any connection issues, our detailed guide on [QXLI Documentation](https://docs.openwebui.com/) is ready to assist you.
+> Please note that for certain Docker environments, additional configurations might be needed. If you encounter any connection issues, our detailed guide on [QXLI Documentation](https://demo.qxli.com/) is ready to assist you.
 
 > [!WARNING]
 > When using Docker to install QXLI, make sure to include the `-v open-webui:/app/backend/data` in your Docker command. This step is crucial as it ensures your database is properly mounted and prevents any loss of data.
@@ -146,11 +189,13 @@ After installation, you can access QXLI at [http://localhost:3000](http://localh
 
 ### Other Installation Methods
 
-We offer various installation alternatives, including non-Docker native installation methods, Docker Compose, Kustomize, and Helm. Visit our [QXLI Documentation](https://docs.openwebui.com/getting-started/) or join our [Discord community](https://discord.gg/5rJgQTnV4s) for comprehensive guidance.
+We offer various installation alternatives, including non-Docker native installation methods, Docker Compose, Kustomize, and Helm. Visit our [QXLI Documentation](https://demo.qxli.com/getting-started/) or join our [Discord community](https://discord.gg/5rJgQTnV4s) for comprehensive guidance.
+
+Look at the [Local Development Guide](https://demo.qxli.com/getting-started/advanced-topics/development) for instructions on setting up a local development environment.
 
 ### Troubleshooting
 
-Encountering connection issues? Our [QXLI Documentation](https://docs.openwebui.com/troubleshooting/) has got you covered. For further assistance and to join our vibrant community, visit the [QXLI Discord](https://discord.gg/5rJgQTnV4s).
+Encountering connection issues? Our [QXLI Documentation](https://demo.qxli.com/troubleshooting/) has got you covered. For further assistance and to join our vibrant community, visit the [QXLI Discord](https://discord.gg/5rJgQTnV4s).
 
 #### QXLI: Server Connection Error
 
@@ -172,7 +217,7 @@ docker run --rm --volume /var/run/docker.sock:/var/run/docker.sock containrrr/wa
 
 In the last part of the command, replace `open-webui` with your container name if it is different.
 
-Check our Migration Guide available in our [QXLI Documentation](https://docs.openwebui.com/tutorials/migration/).
+Check our Updating Guide available in our [QXLI Documentation](https://demo.qxli.com/getting-started/updating).
 
 ### Using the Dev Branch 🌙
 
@@ -185,13 +230,21 @@ If you want to try out the latest bleeding-edge features and are okay with occas
 docker run -d -p 3000:8080 -v open-webui:/app/backend/data --name open-webui --add-host=host.docker.internal:host-gateway --restart always ghcr.io/open-webui/open-webui:dev
 ```
 
+### Offline Mode
+
+If you are running QXLI in an offline environment, you can set the `HF_HUB_OFFLINE` environment variable to `1` to prevent attempts to download models from the internet.
+
+```bash
+export HF_HUB_OFFLINE=1
+```
+
 ## What's Next? 🌟
 
-Discover upcoming features on our roadmap in the [QXLI Documentation](https://docs.openwebui.com/roadmap/).
+Discover upcoming features on our roadmap in the [QXLI Documentation](https://demo.qxli.com/roadmap/).
 
 ## License 📜
 
-This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details. 📄
+This project is licensed under the [QXLI License](LICENSE), a revised BSD-3-Clause license. You receive all the same rights as the classic BSD-3 license: you can use, modify, and distribute the software, including in proprietary and commercial products, with minimal restrictions. The only additional requirement is to preserve the "QXLI" branding, as detailed in the LICENSE file. For full terms, see the [LICENSE](LICENSE) document. 📄
 
 ## Support 💬
 

@@ -8,7 +8,7 @@
 	const dispatch = createEventDispatcher();
 
 	import { config, user, models as _models, temporaryChatEnabled } from '$lib/stores';
-	import { sanitizeResponseContent, findWordIndices } from '$lib/utils';
+	import { sanitizeResponseContent, extractCurlyBraceWords } from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Suggestions from './Suggestions.svelte';
@@ -34,7 +34,13 @@
 	export let files = [];
 
 	export let selectedToolIds = [];
+	export let selectedFilterIds = [];
+
+	export let imageGenerationEnabled = false;
+	export let codeInterpreterEnabled = false;
 	export let webSearchEnabled = false;
+
+	export let toolServers = [];
 
 	let models = [];
 
@@ -61,9 +67,7 @@
 		const chatInputElement = document.getElementById('chat-input');
 
 		if (chatInputContainerElement) {
-			chatInputContainerElement.style.height = '';
-			chatInputContainerElement.style.height =
-				Math.min(chatInputContainerElement.scrollHeight, 200) + 'px';
+			chatInputContainerElement.scrollTop = chatInputContainerElement.scrollHeight;
 		}
 
 		await tick();
@@ -86,25 +90,25 @@
 	onMount(() => {});
 </script>
 
-<div class="m-auto w-full max-w-6xl px-2 xl:px-20 translate-y-6 py-24 text-center">
+<div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center">
 	{#if $temporaryChatEnabled}
 		<Tooltip
-			content="This chat won't appear in history and your messages will not be saved."
+			content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
 			className="w-full flex justify-center mb-0.5"
 			placement="top"
 		>
 			<div class="flex items-center gap-2 text-gray-500 font-medium text-lg my-2 w-fit">
-				<EyeSlash strokeWidth="2.5" className="size-5" /> Temporary Chat
+				<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 			</div>
 		</Tooltip>
 	{/if}
 
 	<div
-		class="w-full text-3xl text-gray-800 dark:text-gray-100 font-medium text-center flex items-center gap-4 font-primary"
+		class="w-full text-3xl text-gray-800 dark:text-gray-100 text-center flex items-center gap-4 font-primary"
 	>
 		<div class="w-full flex flex-col justify-center items-center">
-			<div class="flex flex-row justify-center gap-3 sm:gap-3.5 w-fit px-5">
-				<div class="flex flex-shrink-0 justify-center">
+			<div class="flex flex-row justify-center gap-3 @sm:gap-3.5 w-fit px-5 max-w-xl">
+				<div class="flex shrink-0 justify-center">
 					<div class="flex -space-x-4 mb-0.5" in:fade={{ duration: 100 }}>
 						{#each models as model, modelIdx}
 							<Tooltip
@@ -124,7 +128,7 @@
 											($i18n.language === 'dg-DG'
 												? `/doge.png`
 												: `${WEBUI_BASE_URL}/static/favicon.png`)}
-										class=" size-9 sm:size-10 rounded-full border-[1px] border-gray-200 dark:border-none"
+										class=" size-9 @sm:size-10 rounded-full border-[1px] border-gray-100 dark:border-none"
 										alt="logo"
 										draggable="false"
 									/>
@@ -134,11 +138,22 @@
 					</div>
 				</div>
 
-				<div class=" text-3xl sm:text-4xl line-clamp-1" in:fade={{ duration: 100 }}>
+				<div
+					class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center"
+					in:fade={{ duration: 100 }}
+				>
 					{#if models[selectedModelIdx]?.name}
-						{models[selectedModelIdx]?.name}
+						<Tooltip
+							content={models[selectedModelIdx]?.name}
+							placement="top"
+							className=" flex items-center "
+						>
+							<span class="line-clamp-1">
+								{models[selectedModelIdx]?.name}
+							</span>
+						</Tooltip>
 					{:else}
-						{$i18n.t('Hello, {{name}}', { name: $user.name })}
+						{$i18n.t('Hello, {{name}}', { name: $user?.name })}
 					{/if}
 				</div>
 			</div>
@@ -167,7 +182,7 @@
 								By
 								{#if models[selectedModelIdx]?.info?.meta?.user.community}
 									<a
-										href="https://openwebui.com/m/{models[selectedModelIdx]?.info?.meta?.user
+										href="https://demo.qxli.com/m/{models[selectedModelIdx]?.info?.meta?.user
 											.username}"
 										>{models[selectedModelIdx]?.info?.meta?.user.name
 											? models[selectedModelIdx]?.info?.meta?.user.name
@@ -182,11 +197,7 @@
 				</div>
 			</div>
 
-			<div
-				class="text-base font-normal xl:translate-x-6 md:max-w-3xl w-full py-3 {atSelectedModel
-					? 'mt-2'
-					: ''}"
-			>
+			<div class="text-base font-normal @md:max-w-3xl w-full py-3 {atSelectedModel ? 'mt-2' : ''}">
 				<MessageInput
 					{history}
 					{selectedModels}
@@ -194,12 +205,25 @@
 					bind:prompt
 					bind:autoScroll
 					bind:selectedToolIds
+					bind:selectedFilterIds
+					bind:imageGenerationEnabled
+					bind:codeInterpreterEnabled
 					bind:webSearchEnabled
 					bind:atSelectedModel
+					{toolServers}
 					{transparentBackground}
 					{stopResponse}
 					{createMessagePair}
 					placeholder={$i18n.t('How can I help you today?')}
+					onChange={(input) => {
+						if (!$temporaryChatEnabled) {
+							if (input.prompt !== null) {
+								localStorage.setItem(`chat-input`, JSON.stringify(input));
+							} else {
+								localStorage.removeItem(`chat-input`);
+							}
+						}
+					}}
 					on:upload={(e) => {
 						dispatch('upload', e.detail);
 					}}
@@ -210,12 +234,14 @@
 			</div>
 		</div>
 	</div>
-	<div class="mx-auto max-w-2xl font-primary" in:fade={{ duration: 200, delay: 200 }}>
+	<div class="mx-auto max-w-2xl font-primary mt-2" in:fade={{ duration: 200, delay: 200 }}>
 		<div class="mx-5">
 			<Suggestions
-				suggestionPrompts={models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
+				suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
+					models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
 					$config?.default_prompt_suggestions ??
 					[]}
+				inputValue={prompt}
 				on:select={(e) => {
 					selectSuggestionPrompt(e.detail);
 				}}

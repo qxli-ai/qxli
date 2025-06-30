@@ -62,17 +62,17 @@ services:
       - web-network
     restart: always
   
-  beeai:
-    build:
-      context: ./beeai
-    container_name: beeai
-    ports:
-      - "8333:8333"
-    volumes:
-      - beeai:/data
-    networks:
-      - web-network
-    restart: always
+  # beeai:
+  #   build:
+  #     context: ./beeai
+  #   container_name: beeai
+  #   ports:
+  #     - "8333:8333"
+  #   volumes:
+  #     - beeai:/data
+  #   networks:
+  #     - web-network
+  #   restart: always
   
   langflow:
     image: langflowai/langflow-nightly:v1.1.1.dev25

@@ -89,39 +89,39 @@ services:
       - web-network
     restart: always
   
-  nvidia-nim:
-    image: nvcr.io/nim/meta/llama-3.2-11b-vision-instruct:latest
-    container_name: llama-3.2-11b-vision-instruct
-    runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    shm_size: 16gb
-    environment:
-      NGC_API_KEY: ${NGC_API_KEY}
-    volumes:
-      - ~/.cache/nim:/opt/nim/.cache
-    user: "${UID}"
-    ports:
-      - "8000:8000"
-    networks:
-      - web-network
-    restart: always
+  # nvidia-nim:
+  #   image: nvcr.io/nim/meta/llama-3.2-11b-vision-instruct:latest
+  #   container_name: llama-3.2-11b-vision-instruct
+  #   runtime: nvidia
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
+  #   shm_size: 16gb
+  #   environment:
+  #     NGC_API_KEY: ${NGC_API_KEY}
+  #   volumes:
+  #     - ~/.cache/nim:/opt/nim/.cache
+  #   user: "${UID}"
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - web-network
+  #   restart: always
 
   # gpt-researcher:
   #   image: gptresearcher/gpt-researcher
   #   build: ./gpt-researcher
   #   environment:
-  #     - OPENAI_API_KEY=123
-  #     - OPENAI_API_BASE=http://ollama:11434/v1
-  #     - OLLAMA_BASE_URL=http://ollama:11434/
-  #     - FAST_LLM=ollama:llama3.1:8b
-  #     - SMART_LLM=ollama:llama3.1:8b
-  #     - EMBEDDING=ollama:nomic-embed-text
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     # - OPENAI_API_BASE=http://ollama:11434/v1
+  #     # - OLLAMA_BASE_URL=http://ollama:11434/
+  #     # - FAST_LLM=ollama:llama3.1:8b
+  #     # - SMART_LLM=ollama:llama3.1:8b
+  #     # - EMBEDDING=ollama:nomic-embed-text
   #     - TAVILY_API_KEY=${TAVILY_API_KEY}
   #     - DOC_PATH=./my-docs
   #   ports:

@@ -4,13 +4,13 @@ services:
     image: gptresearcher/gpt-researcher
     build: ./
     environment:
-      OPENAI_API_KEY: "123"
-      OPENAI_API_BASE: "http://34.16.120.113/v1"
-      OLLAMA_BASE_URL: "http://34.16.120.113/"
-      FAST_LLM: "ollama:llama3.1:8b"
-      SMART_LLM: "ollama:llama3.1:8b"
-      EMBEDDING: "ollama:nomic-embed-text"
-      TAVILY_API_KEY: "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"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      # OPENAI_API_BASE: "http://34.16.120.113/v1"
+      # OLLAMA_BASE_URL: "http://34.16.120.113/"
+      # FAST_LLM: "ollama:llama3.1:8b"
+      # SMART_LLM: "ollama:llama3.1:8b"
+      # EMBEDDING: "ollama:nomic-embed-text"
+      TAVILY_API_KEY: ${TAVILY_API_KEY}
       DOC_PATH: "./my-docs"
     restart: always
     ports:
@@ -42,7 +42,7 @@ services:
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       TAVILY_API_KEY: ${TAVILY_API_KEY}
-      LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY}
+      # LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY}
     profiles: ["test"]
     command: >
       /bin/sh -c "

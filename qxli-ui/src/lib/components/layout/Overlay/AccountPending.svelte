@@ -40,17 +40,15 @@
 					{#if ($config?.ui?.pending_user_overlay_content ?? '').trim() !== ''}
 						{$config.ui.pending_user_overlay_content}
 					{:else}
-						{$i18n.t('Your account status is currently pending activation.')}{'\n'}{$i18n.t(
-							'To access the WebUI, please reach out to the administrator. Admins can manage user statuses from the Admin Panel.'
-						)}
+						{$i18n.t('Your account status is currently pending activation.')}
 					{/if}
 				</div>
 
-				{#if adminDetails}
+				<!-- {#if adminDetails}
 					<div class="mt-4 text-sm font-medium text-center">
 						<div>{$i18n.t('Admin')}: {adminDetails.name} ({adminDetails.email})</div>
 					</div>
-				{/if}
+				{/if} -->
 
 				<div class=" mt-6 mx-auto relative group w-fit">
 					<button

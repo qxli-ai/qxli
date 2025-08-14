@@ -25,7 +25,7 @@ services:
     #   args:
     #     USE_OLLAMA: false
     #     USE_CUDA: true
-    image: aryanvermatech/qxli-ui:latest
+    image: aryanvermatechno/qxli-ui:latest
     container_name: qxli-ui
     runtime: nvidia
     ports:

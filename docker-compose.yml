@@ -20,14 +20,15 @@ services:
     restart: always
 
   qxli-ui:
-    # build:
-    #   context: ./qxli-ui
-    #   args:
-    #     USE_OLLAMA: false
-    #     USE_CUDA: true
-    image: aryanvermatechno/qxli-ui:latest
+    build:
+      context: ./qxli-ui
+      platforms:
+        - linux/arm64
+      args:
+        USE_OLLAMA: false
+        USE_CUDA: true
+    # image: aryanvermatechno/qxli-ui:latest
     container_name: qxli-ui
-    runtime: nvidia
     ports:
       - "8888:8080"
     environment:

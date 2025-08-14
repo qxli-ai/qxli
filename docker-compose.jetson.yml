@@ -1,0 +1,97 @@
+version: '3.8'  # Jetson-optimized Docker Compose
+
+services:
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt/live/demo.qxli.com/fullchain.pem:/etc/ssl/demo.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/demo.qxli.com/privkey.pem:/etc/ssl/demo.qxli.com/privkey.pem:ro
+      - /etc/letsencrypt/live/agents.qxli.com/fullchain.pem:/etc/ssl/agents.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/agents.qxli.com/privkey.pem:/etc/ssl/agents.qxli.com/privkey.pem:ro
+      - /etc/letsencrypt/live/flow.qxli.com/fullchain.pem:/etc/ssl/flow.qxli.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/flow.qxli.com/privkey.pem:/etc/ssl/flow.qxli.com/privkey.pem:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - web-network
+    restart: always
+
+  qxli-ui:
+    # Use ARM64 image for Jetson compatibility
+    image: aryanvermatechno/qxli-ui:arm64
+    platform: linux/arm64
+    container_name: qxli-ui
+    ports:
+      - "8888:8080"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    # No deploy section - Jetson Docker has NVIDIA as default runtime
+    volumes:
+      - ./qxli-ui/ollama:/root/.ollama
+      - ./qxli-ui/open-webui:/app/backend/data
+    networks:
+      - web-network
+    restart: always
+  
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    # No deploy section - Jetson Docker has NVIDIA as default runtime
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - web-network
+    restart: always
+  
+  langflow:
+    image: langflowai/langflow-nightly:v1.1.1.dev25
+    container_name: langflow
+    ports:
+      - "7860:7860"
+    environment:
+      - LANGFLOW_AUTO_LOGIN=False
+      - LANGFLOW_SUPERUSER=admin
+      - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
+      - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
+      - LANGFLOW_NEW_USER_IS_ACTIVE=False
+    networks:
+      - web-network
+    restart: always
+  
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - web-network
+    restart: always
+  
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - web-network
+    restart: always
+
+networks:
+  web-network:
+
+volumes:
+  ollama:
+  open-webui:
+  n8n_data:
+  qdrant_data:

@@ -27,14 +27,18 @@ services:
         USE_CUDA: true
     # image: aryanvermatech/qxli-ui:latest
     container_name: qxli-ui
+    runtime: nvidia
     ports:
       - "8888:8080"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-    devices:
-      - /dev/nvidia0:/dev/nvidia0
-      - /dev/nvidiactl:/dev/nvidiactl
-      - /dev/nvidia-uvm:/dev/nvidia-uvm
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
       - ./qxli-ui/ollama:/root/.ollama
       - ./qxli-ui/open-webui:/app/backend/data

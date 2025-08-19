@@ -1,5 +1,3 @@
-version: '3.8'  # Specify a version according to your Docker Compose setup
-
 services:
 
   nginx:
@@ -25,7 +23,7 @@ services:
       args:
         USE_OLLAMA: false
         USE_CUDA: true
-    # image: aryanvermatechno/qxli-ui:latest
+    image: aryanvermatechno/qxli-ui:latest
     container_name: qxli-ui
     ports:
       - "8888:8080"
@@ -77,20 +75,20 @@ services:
   #     - web-network
   #   restart: always
   
-  langflow:
-    image: langflowai/langflow-nightly:v1.1.1.dev25
-    container_name: langflow
-    ports:
-      - "7860:7860"
-    environment:
-      - LANGFLOW_AUTO_LOGIN=False
-      - LANGFLOW_SUPERUSER=admin
-      - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
-      - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
-      - LANGFLOW_NEW_USER_IS_ACTIVE=False
-    networks:
-      - web-network
-    restart: always
+  # langflow:
+  #   image: langflowai/langflow-nightly:v1.1.1.dev25
+  #   container_name: langflow
+  #   ports:
+  #     - "7860:7860"
+  #   environment:
+  #     - LANGFLOW_AUTO_LOGIN=False
+  #     - LANGFLOW_SUPERUSER=admin
+  #     - LANGFLOW_SUPERUSER_PASSWORD=VGzjw7TENdzNQC4W
+  #     - LANGFLOW_SECRET_KEY=u/Jkb2qRXCOnyidqSo3bgPLlRtKkGQM1DMlplzfXjj4=
+  #     - LANGFLOW_NEW_USER_IS_ACTIVE=False
+  #   networks:
+  #     - web-network
+  #   restart: always
   
   n8n:
     image: docker.n8n.io/n8nio/n8n

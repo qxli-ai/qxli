@@ -1,0 +1,249 @@
+---
+- name: Deploy QXLI Docker Compose Stack
+  hosts: qxli
+  become: true
+  vars:
+    project_src: "{{ playbook_dir }}/../../.."
+    project_dest: /opt/qxli
+    docker_compose_file: docker-compose.yml
+
+  tasks:
+    # ============================================================
+    # Pre-flight Checks
+    # ============================================================
+    - name: Wait for SSH to become available
+      wait_for_connection:
+        timeout: 300
+
+    - name: Gather facts
+      setup:
+
+    # ============================================================
+    # Filesystem Resizing (Ensure we use all available disk space)
+    # ============================================================
+    - name: Install cloud-guest-utils (for growpart)
+      apt:
+        name: cloud-guest-utils
+        state: present
+        update_cache: true
+      ignore_errors: true
+
+    - name: Expand partition and filesystem
+      ansible.builtin.shell: |
+        # Try to grow partition 1 on xvda or nvme0n1
+        growpart /dev/xvda 1 || growpart /dev/nvme0n1 1 || true
+        # Resize filesystem
+        resize2fs /dev/xvda1 || resize2fs /dev/nvme0n1p1 || true
+      register: resize_result
+      changed_when: "'CHANGED' in resize_result.stdout"
+      ignore_errors: true
+
+    # ============================================================
+    # System Updates & Base Packages
+    # ============================================================
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - rsync
+          - python3-pip
+          - git
+        state: present
+
+    # ============================================================
+    # Docker Installation
+    # ============================================================
+    - name: Create keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Add Docker GPG key
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg --yes
+      args:
+        executable: /bin/bash
+
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        filename: docker
+        state: present
+
+    - name: Install Docker packages
+      apt:
+        update_cache: true
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Add {{ ansible_user }} to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    # ============================================================
+    # Project Deployment
+    # ============================================================
+    - name: Create deploy directory
+      file:
+        path: "{{ project_dest }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Sync project files to remote
+      synchronize:
+        src: "{{ project_src }}/"
+        dest: "{{ project_dest }}/"
+        delete: true
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=infra"
+          - "--exclude=node_modules"
+          - "--exclude=__pycache__"
+          - "--exclude=*.pyc"
+          - "--exclude=.env.local"
+          - "--exclude=qxli-ui/open-webui"
+          - "-e 'ssh -i {{ ansible_ssh_private_key_file }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+      delegate_to: localhost
+      become: false
+
+    - name: Create .env file if not exists
+      file:
+        path: "{{ project_dest }}/.env"
+        state: touch
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+
+    # ============================================================
+    # SSL Certificate Setup (Let's Encrypt)
+    # ============================================================
+    - name: Install certbot
+      apt:
+        name:
+          - certbot
+        state: present
+
+    - name: Create SSL directories
+      file:
+        path: "/etc/letsencrypt/live/{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - demo.qxli.com
+        - agents.qxli.com
+
+    - name: Create local temp directory for certs
+      delegate_to: localhost
+      ansible.builtin.command: mktemp -d
+      register: local_cert_tmp
+      become: false
+
+    - name: Stage certificates locally
+      delegate_to: localhost
+      become: true
+      ansible.builtin.shell: |
+        mkdir -p "{{ local_cert_tmp.stdout }}/{{ item }}"
+        cp -L -r /etc/letsencrypt/live/{{ item }}/* "{{ local_cert_tmp.stdout }}/{{ item }}/"
+        chmod -R a+r "{{ local_cert_tmp.stdout }}"
+        find "{{ local_cert_tmp.stdout }}" -type d -exec chmod a+x {} +
+      loop:
+        - demo.qxli.com
+        - agents.qxli.com
+      args:
+        executable: /bin/bash
+
+    - name: Copy SSL certificates to remote
+      synchronize:
+        src: "{{ local_cert_tmp.stdout }}/{{ item }}/"
+        dest: "/etc/letsencrypt/live/{{ item }}/"
+        archive: true
+        delete: true
+        rsync_path: "sudo rsync"
+        rsync_opts:
+          - "-e 'ssh -i {{ ansible_ssh_private_key_file }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+      delegate_to: localhost
+      become: false
+      loop:
+        - demo.qxli.com
+        - agents.qxli.com
+
+    - name: Cleanup local temp certificates
+      delegate_to: localhost
+      file:
+        path: "{{ local_cert_tmp.stdout }}"
+        state: absent
+      become: true
+
+    # ============================================================
+    # Docker Compose Deployment
+    # ============================================================
+    - name: Pull latest images
+      ansible.builtin.command: docker compose pull
+      args:
+        chdir: "{{ project_dest }}"
+      register: pull_result
+      changed_when: "'Downloaded' in pull_result.stdout or pull_result.rc == 0"
+
+    - name: Stop existing containers (if any)
+      ansible.builtin.command: docker compose down
+      args:
+        chdir: "{{ project_dest }}"
+      ignore_errors: true
+
+    - name: Start Docker Compose stack
+      ansible.builtin.command: docker compose up -d --build
+      args:
+        chdir: "{{ project_dest }}"
+      register: compose_result
+
+    - name: Show running containers
+      ansible.builtin.command: docker ps
+      register: docker_ps
+      changed_when: false
+
+    - name: Display running containers
+      debug:
+        var: docker_ps.stdout_lines
+
+    # ============================================================
+    # Health Checks
+    # ============================================================
+    - name: Wait for services to be healthy
+      ansible.builtin.wait_for:
+        port: "{{ item.port }}"
+        host: localhost
+        timeout: 120
+        state: started
+      loop:
+        - { name: "nginx", port: 443 }
+        - { name: "qxli-ui", port: 8888 }
+        - { name: "n8n", port: 5678 }
+        - { name: "qdrant", port: 6333 }
+      ignore_errors: true
+
+    - name: Final status
+      debug:
+        msg: "QXLI stack deployed successfully! Access via https://{{ ansible_host }}"

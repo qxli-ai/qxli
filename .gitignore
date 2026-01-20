@@ -1,3 +1,5 @@
 cache/*
 open-webui/*
 .env
+.terraform.lock.hcl
+.terraform

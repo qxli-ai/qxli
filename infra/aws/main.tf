@@ -123,6 +123,32 @@ resource "aws_instance" "qxli" {
   }
 }
 
+# ─────────────────────────────────────────────────────────────
+# Secrets Manager — SSH private key
+# Stores the key so other devs can pull it without file transfer.
+# Retrieve with:
+#   aws secretsmanager get-secret-value \
+#     --secret-id <name> --query SecretString --output text \
+#     > ~/.ssh/qxli-aws && chmod 600 ~/.ssh/qxli-aws
+#
+# NOTE: The key content is also stored in terraform.tfstate.
+# Use a remote backend (S3 + DynamoDB) with encryption enabled.
+# ─────────────────────────────────────────────────────────────
+resource "aws_secretsmanager_secret" "ssh_private_key" {
+  name        = "${local.name_prefix}/ssh-private-key"
+  description = "SSH private key for QXLI EC2 instance (${local.name_prefix}). Managed by Terraform."
+
+  tags = {
+    Name    = "${local.name_prefix}-ssh-private-key"
+    Project = var.project
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "ssh_private_key" {
+  secret_id     = aws_secretsmanager_secret.ssh_private_key.id
+  secret_string = file(pathexpand(var.ssh_private_key_path))
+}
+
 # Elastic IP for static public IP
 resource "aws_eip" "qxli" {
   domain = "vpc"

@@ -51,8 +51,14 @@ variable "key_pair_name" {
 }
 
 variable "ssh_public_key_path" {
-  description = "Path to your public SSH key (e.g., ~/.ssh/id_rsa.pub)."
+  description = "Path to your public SSH key (e.g., ~/.ssh/qxli-aws.pub)."
   type        = string
+}
+
+variable "ssh_private_key_path" {
+  description = "Path to your private SSH key (e.g., ~/.ssh/qxli-aws). Used to upload the key to Secrets Manager."
+  type        = string
+  default     = "~/.ssh/qxli-aws"
 }
 
 variable "allowed_ssh_cidrs" {
